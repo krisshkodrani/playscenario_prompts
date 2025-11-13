@@ -1,0 +1,15 @@
+{#
+  This is the user-facing prompt for EDITING.
+  It is rendered by the CharacterEditRequest schema.
+#}
+<task_instructions>
+Apply the following edit request to the current character profile and return the new, complete JSON object.
+</task_instructions>
+
+<edit_request>
+{{ edit_request }}
+</edit_request>
+
+<current_character_json>
+{{ current_character | tojson_pretty }}
+</current_character_json>

@@ -2,6 +2,7 @@ import typer
 import yaml
 import os
 import json
+import re
 from typing import Dict, Any, Optional
 from abc import ABC, abstractmethod
 
@@ -92,6 +93,10 @@ class LlmClientFactory:
         else:
             raise NotImplementedError(f"Provider '{provider}' is not supported.")
 
+def strip_markdown(text: str) -> str:
+    """Strips markdown code blocks from a string."""
+    return re.sub(r"```json\n(.*?)\n```", r"\1", text, flags=re.DOTALL)
+
 def main(
     test_case_path: str = typer.Argument(..., help="Path to the .yaml test case file."),
     models_config_path: str = typer.Option("config/models.yaml", help="Path to the models config file."),
@@ -136,7 +141,12 @@ def main(
 
         # Instantiate the factory and the input schema
         factory_instance = FactoryClass()
-        SchemaClass = factory_instance.build_prompt_create.__annotations__['request']
+        if factory_method_name == "build_prompt_create":
+            SchemaClass = factory_instance.build_prompt_create.__annotations__['request']
+        elif factory_method_name == "build_prompt_edit":
+            SchemaClass = factory_instance.build_prompt_edit.__annotations__['request']
+        else:
+            raise ValueError(f"Unsupported factory method: {factory_method_name}")
 
         request_obj = SchemaClass(**inputs)
 
@@ -181,19 +191,19 @@ def main(
         typer.echo(f"Running assertion: {assertion_type}")
 
         # This is a basic implementation. A real harness would be more robust.
-        if assertion_type == "pydantic_schema":
+        if assertion_type == "is_valid_pydantic_schema":
             try:
                 # Dynamically get the schema class from prompts.schemas
-                SchemaToValidate = __import__("prompts.schemas", fromlist=[assertion.get("expected")]).__dict__[assertion.get("expected")]
-                SchemaToValidate.model_validate_json(response_text)
-                typer.secho(f"  [PASS] Response validates against {assertion.get('expected')}", fg=typer.colors.GREEN)
+                SchemaToValidate = __import__("prompts.schemas", fromlist=[assertion.get("schema")]).__dict__[assertion.get("schema")]
+                SchemaToValidate.model_validate_json(strip_markdown(response_text))
+                typer.secho(f"  [PASS] Response validates against {assertion.get('schema')}", fg=typer.colors.GREEN)
             except Exception as e:
                 typer.secho(f"  [FAIL] Pydantic validation failed: {e}", fg=typer.colors.RED)
                 all_assertions_passed = False
 
         elif assertion_type == "field_contains":
             try:
-                response_json = json.loads(response_text)
+                response_json = json.loads(strip_markdown(response_text))
                 field = assertion.get("field")
                 expected_values = assertion.get("expected", [])
                 field_value = response_json.get(field, "")
@@ -209,7 +219,7 @@ def main(
 
         elif assertion_type == "field_not_contains":
             try:
-                response_json = json.loads(response_text)
+                response_json = json.loads(strip_markdown(response_text))
                 field = assertion.get("field")
                 unexpected_values = assertion.get("expected", [])
                 field_value = response_json.get(field, "")
