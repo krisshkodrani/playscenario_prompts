@@ -82,6 +82,15 @@ class CharacterCreationRequest(BaseModel):
     other_notes: Optional[str] = Field(None, description="Any other miscellaneous notes or creative direction.")
 
 
+class CharacterEditRequest(BaseModel):
+    """
+    Defines the strongly-typed inputs for *editing* a character.
+    It provides the user's instruction AND the full current character.
+    """
+    edit_request: str = Field(..., description="The user's specific natural language instruction for what to change.")
+    current_character: CharacterSchema = Field(..., description="The full, current JSON object of the character to be edited.")
+
+
 # --- Router Schemas ---
 
 class IntentRouterSchema(BaseModel):
