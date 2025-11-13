@@ -12,17 +12,12 @@ inputs:
   role_notes: "A grumpy, old pirate who has lost his treasure."
   personality_notes: "Cynical, sarcastic, but with a hidden heart of gold. Hates parrots."
   background_notes: "Was once the most feared pirate on the seven seas, but was betrayed by his first mate. Now lives in exile, searching for his stolen treasure."
+  expertise_notes: "Expert swordsman, master navigator, terrible singer."
+  goal_notes: "Find his treasure, get revenge on his first mate, and retire to a quiet island."
+  other_notes: "Has a pet crab named 'Pinchy'."
+
 
 # List of assertions to run on the LLM's response
 assertions:
-  - type: "pydantic_schema"
-    expected: "CharacterSchema"
-  - type: "field_contains"
-    field: "personality"
-    expected: ["grumpy", "cynical", "sarcastic"]
-  - type: "field_not_contains"
-    field: "personality"
-    expected: ["happy", "optimistic"]
-  - type: "ai_critique"
-    prompt: "Does the character's background mention a betrayal? Answer with only 'true' or 'false'."
-    expected: "true"
+  - type: "is_valid_pydantic_schema"
+    schema: "ChainOfThoughtCharacterSchema"

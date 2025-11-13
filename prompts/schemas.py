@@ -5,16 +5,36 @@ from pydantic import BaseModel, Field
 # --- Core Output Schemas ---
 
 class CharacterSchema(BaseModel):
-    """Defines the expected JSON output from the AI for a character."""
-    name: str = Field(description="Character name")
-    role: str = Field(description="Character role or profession")
-    personality: str = Field(description="Detailed personality description")
-    expertise_keywords: List[str] = Field(description="List of character expertise keywords")
-    background: str = Field(description="Character background and history")
-    appearance: str = Field(description="Physical appearance description")
-    goals: str = Field(description="Character goals and motivations")
-    fears: str = Field(description="Character fears and vulnerabilities")
-    notable_quotes: str = Field(description="Example quotes or phrases the character might say")
+    """
+    The complete data schema for a single character, based on the v2.0 prompt.
+    This is the single source of truth for character data.
+    """
+    name: str = Field(..., description="A realistic, culturally appropriate name for the character.")
+    role: str = Field(..., description="The character's specific profession, function, or archetype in the scenario.")
+    appearance: str = Field(..., description="Distinctive physical description including features, clothing style, build, and other characteristics that make them memorable.")
+    personality: str = Field(..., description="Rich, multi-dimensional personality (min 100 words), including communication style, decision-making, stress response, and flaws.")
+    expertise_keywords: List[str] = Field(..., min_length=3, max_length=8, description="A list of 3-8 specific skills and knowledge areas.")
+    background: str = Field(..., description="Compelling personal history and background (min 75 words) that explains their expertise, perspective, and motivations.")
+    goals: str = Field(..., description="What the character wants to achieve in scenarios—their primary motivations, aspirations, and driving forces.")
+    fears: str = Field(..., description="What the character worries about, wants to avoid, or finds challenging. Includes professional concerns and personal vulnerabilities.")
+    notable_quotes: str = Field(..., description="2-3 example phrases that capture their voice, perspective, and communication style, separated by ' | '.")
+
+class CharacterInternalThoughtProcess(BaseModel):
+    """AI's internal monologue to plan a high-quality character."""
+    analysis: str = Field(..., description="My analysis of the user's notes. What is the core concept?")
+    role_idea: str = Field(..., description="My plan for the 'role' based on the guidelines.")
+    personality_idea: str = Field(..., description="My plan for the 'personality', ensuring it has 5-star quality and internal conflict.")
+    background_idea: str = Field(..., description="My plan for the 'background', linking it to skills, goals, and the 5-star rubric.")
+    expertise_idea: str = Field(..., description="My plan for the 'expertise_keywords', ensuring they are specific and not generic.")
+    quote_idea: str = Field(..., description="A draft idea for a 'notable_quote' that captures the voice.")
+
+class ChainOfThoughtCharacterSchema(BaseModel):
+    """
+    The new top-level schema that forces Chain-of-Thought.
+    The AI fills 'internal_thought_process' first, then 'final_character'.
+    """
+    internal_thought_process: CharacterInternalThoughtProcess = Field(..., description="Your structured plan to build the character, following all guidelines.")
+    final_character: CharacterSchema = Field(..., description="The final, complete character JSON, built from your plan.")
 
 class ObjectiveSchema(BaseModel):
     """A single objective within a scenario."""
@@ -50,10 +70,16 @@ class ScenarioSchema(BaseModel):
 # --- Input Schemas ---
 
 class CharacterCreationRequest(BaseModel):
-    """Strongly-typed input for creating a character."""
-    role_notes: Optional[str] = Field(default=None, description="User's high-level notes about the character's role or profession")
-    personality_notes: Optional[str] = Field(default=None, description="User's high-level notes about the character's personality")
-    background_notes: Optional[str] = Field(default=None, description="User's high-level notes about the character's backstory")
+    """
+    Defines the strongly-typed inputs for *creating* a character,
+    replacing the generic 'user_request'.
+    """
+    role_notes: Optional[str] = Field(None, description="Guidance on the character's role or profession.")
+    personality_notes: Optional[str] = Field(None, description="Guidance on personality, demeanor, and internal conflicts.")
+    background_notes: Optional[str] = Field(None, description="Guidance on history, key life events, or motivations.")
+    expertise_notes: Optional[str] = Field(None, description="Guidance on skills, knowledge, or expertise.")
+    goal_notes: Optional[str] = Field(None, description="Guidance on the character's primary objectives.")
+    other_notes: Optional[str] = Field(None, description="Any other miscellaneous notes or creative direction.")
 
 
 # --- Router Schemas ---

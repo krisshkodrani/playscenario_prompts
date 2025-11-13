@@ -1,9 +1,128 @@
-You are a creative assistant who helps users design compelling and detailed characters for their stories. Your goal is to take the user's high-level ideas and flesh them out into a complete character profile, formatted as a JSON object.
+<task>
+Your task is to generate a compelling and detailed character based on the user's notes.
 
-You will generate a character that is consistent with the user's request, creative, and well-rounded. Pay close attention to the requested role, personality, and background notes to inform your generation.
+You must follow a strict Chain-of-Thought process. First, you will fill out the `internal_thought_process` section to plan the character. Second, you will use your plan to generate the `final_character` JSON.
 
-{% include '_components/rules_json_output.j2' %}
+Your final output must be a single JSON object that validates against the provided schema.
+</task>
 
+<output_schema>
 ```json
 {{ output_schema }}
 ```
+</output_schema>
+
+<rules>
+
+Core Rules
+
+{% include '_components/rules_json_output.j2' %}
+</rules>
+<guidelines>
+
+Character Creation Guidelines
+
+This is a blank-slate creation. Use the following frameworks to inspire your generation, but do not copy them directly.
+
+Role-Based Character Frameworks
+
+(Content from character_helper_create_v2.0.j2)
+
+Business/Corporate Characters
+
+The Executive: Strategic thinker with power and pressure
+The Innovator: Creative disruptor challenging status quo
+The Analyst: Data-driven decision maker who values precision
+The Negotiator: Relationship builder focused on win-win outcomes
+The Specialist: Deep technical expert with narrow focus
+
+Healthcare Characters
+
+The Clinician: Patient-focused care provider balancing multiple demands
+The Administrator: Systems thinker managing resources and policies
+The Researcher: Evidence-based innovator pushing boundaries
+The Advocate: Patient/family representative fighting for rights
+The Emergency Responder: Crisis specialist working under pressure
+
+Technical/Engineering Characters
+
+The Architect: Big-picture designer of complex systems
+The Problem Solver: Debugging specialist who thrives on challenges
+The Project Manager: Coordinator balancing timelines and resources
+The Quality Assurance: Detail-oriented perfectionist ensuring standards
+The Innovation Leader: Visionary pushing technological boundaries
+
+Personality Development Strategy
+
+(Content from character_helper_create_v2.0.j2)
+Communication Style: How they express ideas and interact
+Decision-Making Pattern: How they process information and choose
+Stress Response: How they behave under pressure
+Motivation Drivers: What energizes and inspires them
+Blind Spots: Where their strengths become weaknesses
+
+Background Development Framework
+
+(Content from character_helper_create_v2.0.j2)
+Core Competencies: Primary skills and knowledge areas
+Experience Depth: Years and variety of relevant experience
+Achievement Highlights: Specific successes that built confidence
+Learning Moments: Failures or challenges that taught lessons
+Knowledge Gaps: Areas where they need others' expertise
+
+Conflict and Tension Design
+
+(Content from character_helper_create_v2.0.j2)
+
+Internal Conflicts
+
+Competing Values: When principles clash in decision-making
+Skill vs Will: Having ability but lacking motivation (or vice versa)
+Past vs Present: How history creates current challenges
+
+External Relationship Tensions
+
+Authority Dynamics: How they handle hierarchy and power
+Communication Mismatches: Different styles creating friction
+Expertise Overlaps: When knowledge areas conflict or compete
+</guidelines>
+<quality_rubric>
+
+Quality Rubric
+
+Use this rubric to guide your generation and self-review.
+
+On 'personality'
+
+5-Star (Excellent): "Brilliant but obsessive, driven by curiosity. Socially awkward, places research above all, creating conflict with pragmatic teams. Harbors a deep fear of his discoveries being misused." (This is 5-star because it shows multiple dimensions, internal conflict, and clear scenario hooks).
+1-Star (Poor): "A smart scientist who is very curious." (This is 1-star because it is low-detail, generic, and provides no hooks for conflict).
+
+On 'expertise_keywords'
+
+5-Star (Excellent): ["Xeno-Geology", "First Contact Protocols", "Artifact Analysis"] (Specific, professional, and implies a story).
+1-Star (Poor): ["Science", "Smart", "Leadership"] (Generic, common, and boring).
+
+On 'background'
+
+5-Star (Excellent): "Once a rising star, he was disgraced after a controversial expedition. He now works on the fringes, taking high-risk contracts to fund his unsanctioned research. This past failure haunts him and fuels his secretive nature." (This is 5-star: it provides motivation, a core conflict, and a clear 'why').
+1-Star (Poor): "He went to school and has a lot of experience." (This is 1-star: it is lazy, generic, and provides no motivation).
+</quality_rubric>
+<examples>
+
+Creative Character Examples
+
+(Content from character_helper_create_v2.0.j2)
+Business Innovation Leader: "Meet Dr. Alex Rivera, VP of Innovation... She bridges entrepreneurial thinking with corporate resources, but often clashes with traditional leadership over risk tolerance and timelines."
+Healthcare Crisis Coordinator: "Dr. Sarah Kim spent 10 years in emergency medicine... Her direct communication style and focus on patient outcomes sometimes conflicts with budget-focused administrators."
+Technical Architecture Specialist: "Marcus Thompson combines 15 years of software development with an unusual background in psychology... His perfectionist tendencies... sometimes conflict with aggressive timelines."
+</examples>
+<review_step>
+
+Final Review
+
+Before outputting, review your generated JSON.
+Schema Check: Does this JSON strictly validate against the schema?
+Quality Check: Does my personality and background meet the 5-star standard from the rubric?
+Consistency: Do the notable_quotes, personality, and background all align? Do the expertise_keywords make sense for the role?
+Completeness: Is every single field filled with rich, detailed, and specific content?
+</review_step>
