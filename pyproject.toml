@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "playscenario-prompt-lib"
+version = "0.1.0"
+description = "A standalone, testable, and production-grade library for managing all AI-driven prompt logic."
+authors = ["Your Name <you@example.com>"]
+packages = [{include = "prompts"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+jinja2 = "*"
+pydantic = "*"
+
+[tool.poetry.dev-dependencies]
+typer = "*"
+pyyaml = "*"
+google-generativeai = "*"
+openai = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

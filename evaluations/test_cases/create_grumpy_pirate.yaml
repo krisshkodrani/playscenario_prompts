@@ -1,0 +1,28 @@
+# Test Case: Create a Grumpy Pirate Character
+
+agent: "character_helper"
+factory_method: "build_prompt_create"
+
+# We'll map this to a specific model in our agents.yaml
+# For this test, let's assume 'character_helper_create' maps to 'gemini_pro_creative'
+model: "gemini_pro_creative"
+
+# The strongly-typed Pydantic request object
+inputs:
+  role_notes: "A grumpy, old pirate who has lost his treasure."
+  personality_notes: "Cynical, sarcastic, but with a hidden heart of gold. Hates parrots."
+  background_notes: "Was once the most feared pirate on the seven seas, but was betrayed by his first mate. Now lives in exile, searching for his stolen treasure."
+
+# List of assertions to run on the LLM's response
+assertions:
+  - type: "pydantic_schema"
+    expected: "CharacterSchema"
+  - type: "field_contains"
+    field: "personality"
+    expected: ["grumpy", "cynical", "sarcastic"]
+  - type: "field_not_contains"
+    field: "personality"
+    expected: ["happy", "optimistic"]
+  - type: "ai_critique"
+    prompt: "Does the character's background mention a betrayal? Answer with only 'true' or 'false'."
+    expected: "true"

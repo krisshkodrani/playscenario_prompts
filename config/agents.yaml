@@ -1,0 +1,15 @@
+agents:
+  intent_router:
+    model: "gemini_flash_strict"
+
+  character_helper_create:
+    model: "gemini_pro_creative"
+
+  character_helper_edit:
+    model: "mistral_large"
+
+  moderator:
+    model: "gemini_flash_strict"
+
+  scenario_feedback:
+    model: "openai_gpt4"

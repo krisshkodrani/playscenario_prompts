@@ -1,0 +1,40 @@
+models:
+  # --- Google Models ---
+  gemini_pro_creative:
+    provider: "google"
+    model_name: "gemini-1.5-pro-latest"
+    api_key_env: "GOOGLE_API_KEY"
+    generation_config:
+      temperature: 0.9
+      top_p: 0.95
+
+  gemini_flash_strict:
+    provider: "google"
+    model_name: "gemini-1.5-flash-latest"
+    api_key_env: "GOOGLE_API_KEY"
+    generation_config:
+      temperature: 0.0
+      response_mime_type: "application/json" # Enforce JSON output
+
+  # --- OpenAI-Compatible Models ---
+  openai_gpt4:
+    provider: "openai"
+    model_name: "gpt-4o"
+    api_key_env: "OPENAI_API_KEY"
+    generation_config:
+      temperature: 0.7
+
+  mistral_large:
+    provider: "mistral"
+    model_name: "mistral-large-latest"
+    api_key_env: "MISTRAL_API_KEY"
+    generation_config:
+      temperature: 0.8
+
+  cerebras_brawndo:
+    provider: "cerebras"
+    model_name: "Brawndo-v1" # Example name
+    api_key_env: "CEREBRAS_API_KEY"
+    base_url: "https.../api.cerebras.com/v1" # This key is crucial
+    generation_config:
+      temperature: 0.5
