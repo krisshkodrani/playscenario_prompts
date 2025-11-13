@@ -136,13 +136,28 @@ def main(
 
         # Instantiate the factory and the input schema
         factory_instance = FactoryClass()
-        SchemaClass = factory_instance.build_prompt_create.__annotations__['request']
+        if factory_method_name == "build_prompt_create":
+            SchemaClass = factory_instance.build_prompt_create.__annotations__['request']
+        elif factory_method_name == "build_prompt_edit":
+            SchemaClass = factory_instance.build_prompt_edit.__annotations__['request']
+        else:
+            raise ValueError(f"Unsupported factory method: {factory_method_name}")
 
         request_obj = SchemaClass(**inputs)
 
         # Call the specified factory method
         prompt_builder_method = getattr(factory_instance, factory_method_name)
-        prompts = prompt_builder_method(request_obj)
+
+        if factory_method_name == "build_prompt_create":
+            system_prompt = factory_instance.get_system_prompt_create()
+            user_prompt = prompt_builder_method(request_obj)
+            prompts = {"system": system_prompt, "user": user_prompt}
+        elif factory_method_name == "build_prompt_edit":
+            system_prompt = factory_instance.get_system_prompt_edit()
+            user_prompt = prompt_builder_method(request_obj)
+            prompts = {"system": system_prompt, "user": user_prompt}
+        else:
+            raise ValueError(f"Unsupported factory method: {factory_method_name}")
 
         typer.secho("--- System Prompt ---", fg=typer.colors.BLUE)
         typer.echo(prompts.get("system"))

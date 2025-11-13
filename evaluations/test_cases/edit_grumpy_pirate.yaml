@@ -1,0 +1,32 @@
+# Test Case: Edit the Grumpy Pirate Character
+
+agent: "character_helper"
+factory_method: "build_prompt_edit"
+
+# We'll map this to a specific model in our agents.yaml
+# For this test, let's assume 'character_helper_edit' maps to 'gemini_pro_creative'
+model: "gemini_pro_creative"
+
+# The strongly-typed Pydantic request object
+inputs:
+  edit_request: "Make the pirate even grumpier and add a fear of crabs."
+  current_character:
+    name: "Captain Silas 'Gravewater' Thorne"
+    role: "The Disgraced Corsair"
+    appearance: "A heavily weathered man whose face looks like dried leather stretched over sharp bone. He stands slightly stooped, no longer commanding the deck, but still possesses surprisingly strong, scarred hands. He wears a stained, once-fine navy coat over mismatched, threadbare clothing, favoring practicality over presentation. He lacks a classic tricorn hat, opting instead for a simple, salt-bleached bandana tied low. His most striking feature is a single, milky-white eye—the other lost to an old skirmish—which views the world with undisguised contempt."
+    personality: "Silas is a monument to bitterness, wrapped in layers of coarse sarcasm. His communication style is abrupt, peppered with archaic nautical curses, and delivered with a gravelly voice worn down by decades of sea air and cheap grog. He trusts nothing and no one, viewing every interaction as a potential transaction or deception. Decision-making is paranoid, relying on past trauma rather than present opportunity, leading him to reject sound advice if it reminds him of his former mate. Under extreme stress, his anger cracks, revealing profound grief over his lost reputation and treasure. His fatal flaw is an inability to genuinely accept help, viewing any kindness as a setup, though he will secretly perform small, unacknowledged acts of genuine decency if he believes no one is watching."
+    expertise_keywords:
+      - "Strategic Naval Maneuvering"
+      - "Pre-Columbian Cartography"
+      - "Interrogation & Coercion"
+      - "Ancient Treasure Caching"
+      - "Bladed Weapons Proficiency"
+    background: "Silas Thorne was once the undisputed terror of the Azure Coasts, known for his audacity and uncanny ability to find gold where others found only rock. He commanded 'The Leviathan's Due' and instilled a near-mythic fear in merchant fleets. His downfall came not from cannon fire, but from the smooth, insidious betrayal of his first mate, Fenris, who stole the legendary hoard—the 'Crown of Aethelred'—and left Silas marooned with a single, crippled longboat. Silas spent the next decade crawling back from obscurity, now a shadow obsessed with reclaiming his legacy. He views the current world as weak and soft, believing only brute experience matters, a perspective forged by the single greatest failure of his life: misjudging the loyalty of one man."
+    goals: "To locate and reclaim the Crown of Aethelred and execute the traitorous Fenris, thereby restoring the terrifying reputation he feels was stolen from him. His secondary, often unacknowledged goal, is to prove to himself that his judgment is still sound."
+    fears: "Dying alone and forgotten in some dusty port before achieving vengeance; being mocked or pitied; and, most intensely, encountering a particularly vocal parrot, which he associates directly with the sound of Fenris's false assurances before the betrayal."
+    notable_quotes: "The sea doesn't forget a debt, lad, it just delays the payment. | Aye, trust is just a fancy word for 'soon-to-be-stabbed.' | Keep that feathered blight away from me, or I'll teach it the true meaning of 'shiver me timbers.'"
+
+# List of assertions to run on the LLM's response
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "ChainOfThoughtCharacterSchema"

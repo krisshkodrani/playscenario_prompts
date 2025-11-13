@@ -1,35 +1,74 @@
-from jinja2 import Environment, FileSystemLoader
+# prompts/agents/character_helper/prompt_factory.py
 import json
-
-from prompts.schemas import CharacterSchema, CharacterCreationRequest
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from typing import Optional
+from pathlib import Path
+from prompts.schemas import (
+    CharacterSchema,
+    CharacterCreationRequest,
+    ChainOfThoughtCharacterSchema,
+    CharacterEditRequest
+)
 
 class CharacterHelperPromptFactory:
-    """
-    Builds prompts for the Character Helper agent.
-    """
-    def __init__(self, template_path: str = "prompts"):
-        self.env = Environment(loader=FileSystemLoader(template_path))
 
-    def build_prompt_create(self, request: CharacterCreationRequest) -> dict:
+    def __init__(self, template_dir: Optional[Path] = None):
+        base_dir = template_dir or Path("prompts/")
+        self._env = Environment(
+            loader=FileSystemLoader(base_dir),
+            autoescape=select_autoescape(),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
+        self._env.filters['tojson_pretty'] = lambda x: json.dumps(x, indent=2)
+
+        # --- Load "Create" Templates ---
+        self._system_create_template = self._env.get_template("agents/character_helper/_system.j2")
+        self._user_create_template = self._env.get_template("agents/character_helper/_user.j2")
+
+        # --- (NEW) Load "Edit" Templates ---
+        self._system_edit_template = self._env.get_template("agents/character_helper/_system_edit.j2")
+        self._user_edit_template = self._env.get_template("agents/character_helper/_user_edit.j2")
+
+        # Cache the CoT schema (re-used for both create and edit)
+        self._cached_schema = ChainOfThoughtCharacterSchema.model_json_schema()
+
+    # --- CREATE METHODS (No Change) ---
+
+    def get_system_prompt_create(self) -> str:
         """
-        Builds the system and user prompts for creating a new character.
-
-        Args:
-            request: A Pydantic object containing the user's notes.
-
-        Returns:
-            A dictionary containing the system and user prompts.
+        Renders the "create" system prompt, injecting the Pydantic
+        JSON schema into it.
         """
-        system_template = self.env.get_template("agents/character_helper/_system.j2")
-        user_template = self.env.get_template("agents/character_helper/_user.j2")
+        return self._system_create_template.render(
+            output_schema=json.dumps(self._cached_schema, indent=2)
+        )
 
-        # Generate the JSON schema from the Pydantic model
-        output_schema = json.dumps(CharacterSchema.model_json_schema(), indent=2)
+    def build_prompt_create(self, request: CharacterCreationRequest) -> str:
+        """
+        Builds the "create" user-facing prompt from a strongly-typed
+        CharacterCreationRequest object.
+        """
+        request_dict = request.model_dump(exclude_unset=True)
+        return self._user_create_template.render(**request_dict).strip() + "\n"
 
-        system_prompt = system_template.render(output_schema=output_schema)
-        user_prompt = user_template.render(request=request)
+    # --- (NEW) EDIT METHODS ---
 
-        return {
-            "system": system_prompt,
-            "user": user_prompt
-        }
+    def get_system_prompt_edit(self) -> str:
+        """
+        Renders the "edit" system prompt, injecting the Pydantic
+        JSON schema into it.
+        """
+        return self._system_edit_template.render(
+            output_schema=json.dumps(self._cached_schema, indent=2)
+        )
+
+    def build_prompt_edit(self, request: CharacterEditRequest) -> str:
+        """
+        Builds the "edit" user-facing prompt from a strongly-typed
+        CharacterEditRequest object.
+        """
+        # Pass the model dump as kwargs to the template
+        return self._user_edit_template.render(
+            **request.model_dump()
+        ).strip() + "\n"
