@@ -1,7 +1,7 @@
 from jinja2 import Environment, FileSystemLoader
 import json
 
-from prompts.schemas import CharacterSchema, CharacterCreationRequest
+from prompts.schemas import ChainOfThoughtCharacterSchema, CharacterCreationRequest
 
 class CharacterHelperPromptFactory:
     """
@@ -24,7 +24,7 @@ class CharacterHelperPromptFactory:
         user_template = self.env.get_template("agents/character_helper/_user.j2")
 
         # Generate the JSON schema from the Pydantic model
-        output_schema = json.dumps(CharacterSchema.model_json_schema(), indent=2)
+        output_schema = json.dumps(ChainOfThoughtCharacterSchema.model_json_schema(), indent=2)
 
         system_prompt = system_template.render(output_schema=output_schema)
         user_prompt = user_template.render(request=request)
