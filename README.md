@@ -66,6 +66,10 @@ python evaluations/evaluate.py <path_to_test_case.yaml | all> [--report]
     ```bash
     python evaluations/evaluate.py evaluations/test_cases/create_grumpy_pirate.yaml
     ```
+*   **Run a scenario creation test case:**
+    ```bash
+    python evaluations/evaluate.py evaluations/test_cases/create_sci_fi_scenario.yaml
+    ```
 *   **Run all test cases:**
     ```bash
     python evaluations/evaluate.py all

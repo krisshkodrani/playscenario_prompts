@@ -1,0 +1,46 @@
+<task>
+Your task is to edit an existing scenario based on the user's request.
+
+First, analyze the user's free-text request to understand the desired changes.
+
+Then, you must follow a strict Chain-of-Thought process. First, you will fill out the `internal_thought_process` section to plan the edits. Second, you will use your plan to generate the `final_scenario` JSON.
+
+Your final output must be a single JSON object that validates against the provided schema. It should contain the complete, updated scenario.
+</task>
+
+<output_schema>
+```json
+{{ output_schema }}
+```
+</output_schema>
+
+<rules>
+{% include '_components/rules_json_output.j2' %}
+</rules>
+
+<guidelines>
+### Scenario Editing Guidelines
+
+- **Minimal Necessary Changes**: Only modify the parts of the scenario the user has requested to change.
+- **Preserve Core Identity**: Maintain the original intent and structure of the scenario unless explicitly asked to change it.
+- **Maintain Consistency**: Ensure that any changes are reflected across all relevant parts of the scenario.
+- **User Request is Priority**: The user's instructions supersede the original content.
+- **Do Not Modify Characters**: You must not change any attributes of the characters within the scenario. The `characters` array in the output JSON must be identical to the one in the input.
+
+### Common Edit Requests
+
+- **Changing the Title or Description**: Refine the scenario's summary.
+- **Adding or Removing Objectives**: Adjust the scenario's goals.
+- **Updating the Initial Scene**: Alter the scenario's opening.
+- **Adjusting Difficulty**: Make the scenario easier or harder.
+</guidelines>
+
+<review_step>
+Final Review
+
+Before outputting, review your generated JSON.
+Schema Check: Does this JSON strictly validate against the schema?
+Quality Check: Have I successfully incorporated the user's requested edits?
+Consistency: Do the changes make sense with the rest of the scenario?
+Completeness: Is every single field still filled with rich, detailed, and specific content?
+</review_step>
