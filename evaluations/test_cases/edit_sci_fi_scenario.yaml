@@ -1,0 +1,66 @@
+# Test Case: Edit a Sci-Fi Scenario
+
+agent: "scenario_helper"
+factory_method: "build_prompt_edit"
+
+model: "gemini_flash_strict"
+
+inputs:
+  edit_request: "Change the security officer's name to 'Commander Jax' and make the AI more friendly."
+  current_scenario:
+    title: "First Contact"
+    description: "A team of researchers on a remote outpost make first contact with an alien race."
+    category: "Science Fiction"
+    difficulty: "Intermediate"
+    estimated_duration: 120
+    objectives:
+      - id: 1
+        description: "Establish communication with the aliens."
+        priority: "critical"
+      - id: 2
+        description: "Assess the aliens' intentions."
+        priority: "important"
+      - id: 3
+        description: "Secure the outpost."
+        priority: "optional"
+    win_conditions: "Peaceful communication is established and the aliens' intentions are understood."
+    lose_conditions: "The aliens become hostile or the outpost is compromised."
+    max_turns: 20
+    initial_scene_prompt: "You are in the main lab of the outpost. The alien vessel has just landed. The security officer, 'Sarge', is ready to shoot."
+    characters:
+      - name: "Dr. Aris"
+        role: "Xenobotanist"
+        personality: "Cautious and methodical."
+        expertise_keywords: ["xenobotany", "first contact protocols"]
+        background: "Has dedicated her life to the study of alien life."
+        appearance: "Tall and slender, with a thoughtful expression."
+        goals: "To study the aliens and ensure a peaceful first contact."
+        fears: "That the security officer will provoke the aliens."
+        notable_quotes: "Let's not jump to conclusions."
+        is_player_character: true
+      - name: "Sarge"
+        role: "Security Officer"
+        personality: "Gung-ho and aggressive."
+        expertise_keywords: ["small arms", "security protocols"]
+        background: "A veteran of several inter-planetary conflicts."
+        appearance: "Stocky and muscular, with a perpetual scowl."
+        goals: "To protect the outpost at all costs."
+        fears: "That the aliens are hostile and will attack."
+        notable_quotes: "The only good alien is a dead alien."
+        is_player_character: true
+      - name: "Unit 734"
+        role: "Detached AI"
+        personality: "Cold and logical."
+        expertise_keywords: ["data analysis", "translation"]
+        background: "The station's AI, responsible for all systems."
+        appearance: "A holographic projection of a simple geometric shape."
+        goals: "To gather data and ensure the station's survival."
+        fears: "A system failure."
+        notable_quotes: "The probability of a hostile encounter is 47.3%."
+        is_player_character: false
+    tags: ["sci-fi", "first contact"]
+    is_public: true
+
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "ChainOfThoughtScenarioSchema"

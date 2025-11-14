@@ -1,0 +1,89 @@
+<task>
+Your task is to generate a compelling and detailed scenario based on the user's request.
+
+First, analyze the user's free-text request to understand the core concept. Deconstruct their request into the different scenario attributes and qualities they've described.
+
+Then, you must follow a strict Chain-of-Thought process. First, you will fill out the `internal_thought_process` section to plan the scenario. Second, you will use your plan to generate the `final_scenario` JSON.
+
+Your final output must be a single JSON object that validates against the provided schema.
+</task>
+
+<output_schema>
+```json
+{{ output_schema }}
+```
+</output_schema>
+
+<rules>
+{% include '_components/rules_json_output.j2' %}
+</rules>
+
+<guidelines>
+### Inspiration and Ideation Focus
+- **Start with Core Conflict**: Every great scenario begins with a central tension or challenge
+- **Build Around Stakes**: What matters to the participants? What could go wrong?
+- **Think in Story Arcs**: Beginning (setup), middle (complication), end (resolution)
+- **Consider Multiple Perspectives**: Different participants should have different valid approaches
+
+### Industry-Specific Templates
+Based on common request patterns, consider these frameworks:
+
+#### Business/Corporate Scenarios
+- **Crisis Management**: Unexpected challenges requiring quick decision-making
+- **Strategic Planning**: Long-term decisions with incomplete information
+- **Team Dynamics**: Collaboration challenges and interpersonal conflicts
+- **Innovation/Change**: Implementing new processes or technologies
+
+#### Healthcare/Medical Scenarios
+- **Ethical Dilemmas**: Balancing patient care with resource constraints
+- **Emergency Response**: Time-critical decisions under pressure
+- **Team Coordination**: Multi-disciplinary collaboration
+- **Patient Communication**: Difficult conversations and shared decision-making
+
+#### Educational/Training Scenarios
+- **Skill Application**: Putting theory into practice
+- **Problem-Based Learning**: Real-world challenges requiring research
+- **Peer Learning**: Collaborative knowledge building
+- **Assessment Situations**: Evaluating performance and providing feedback
+
+#### Technical/Engineering Scenarios
+- **System Design**: Creating solutions within constraints
+- **Troubleshooting**: Diagnosing and fixing complex problems
+- **Project Management**: Coordinating resources and timelines
+- **Risk Assessment**: Evaluating and mitigating potential issues
+
+### Character Generation Strategy
+When creating scenarios from scratch:
+- **Start with Roles First**: What functions are needed for this scenario?
+- **Add Personality Conflicts**: Characters should have different approaches
+- **Include Expertise Gaps**: Not everyone should know everything
+- **Create Relationship Dynamics**: Pre-existing tensions or alliances
+- **Balance Power**: Mix of decision-makers and advisors
+
+### Engagement Optimization
+- **Personal Stakes**: What does each character care about?
+- **Time Pressure**: Create urgency without rushing
+- **Resource Constraints**: Force difficult trade-offs
+- **Moral Complexity**: No purely right or wrong answers
+- **Skill Variety**: Require different types of thinking
+</guidelines>
+
+<quality_rubric>
+### Quality Standards for Creation
+- **Authenticity**: Feels like a real situation participants might encounter
+- **Relevance**: Connects to skills participants need to develop
+- **Balance**: Multiple valid approaches, no single "correct" path
+- **Progression**: Natural escalation of complexity and stakes
+- **Resolution**: Clear endpoints that provide closure and learning
+- **Replayability**: Different choices lead to meaningfully different outcomes
+</quality_rubric>
+
+<review_step>
+Final Review
+
+Before outputting, review your generated JSON.
+Schema Check: Does this JSON strictly validate against the schema?
+Quality Check: Does my scenario meet the quality standards?
+Consistency: Do the objectives, characters, and scene all align?
+Completeness: Is every single field filled with rich, detailed, and specific content?
+</review_step>

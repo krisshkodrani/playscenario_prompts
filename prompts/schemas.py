@@ -45,27 +45,48 @@ class ObjectiveSchema(BaseModel):
 class ScenarioCharacterSchema(BaseModel):
     """Character data structure for scenarios."""
     name: str = Field(description="Character name")
-    role: str = Field(default="Character", description="Character role or profession")
-    personality: str = Field(description="Detailed personality description")
-    expertise_keywords: List[str] = Field(description="List of character expertise keywords")
-    avatar_color: str = Field(description="Tailwind CSS background color class (e.g., 'bg-blue-500')")
+    role: str = Field(description="Their specific function or position in this scenario")
+    personality: str = Field(description="Detailed personality description including communication style, decision-making approach, interpersonal style, and behavioral patterns. Should be substantial enough to drive interesting interactions and conflicts.")
+    expertise_keywords: List[str] = Field(description="A list of specific skills and knowledge areas.")
+    background: str = Field(description="Compelling backstory that explains their expertise, perspective, and stake in this scenario.")
+    appearance: str = Field(description="Physical description with distinctive characteristics that make them memorable.")
+    goals: str = Field(description="What they personally want to achieve in this scenario - their specific motivations.")
+    fears: str = Field(description="What they worry about or want to avoid in this specific situation.")
+    notable_quotes: str = Field(description="Example statement they might make | Another quote if multiple")
+    is_player_character: bool = Field(description="Boolean indicating player vs AI control")
 
 class ScenarioSchema(BaseModel):
     """Defines the expected JSON output from the AI for a scenario."""
-    title: str = Field(description="Scenario title")
-    description: str = Field(description="Detailed scenario description")
-    category: str = Field(description="Scenario category")
+    title: str = Field(description="Compelling Scenario Title That Captures the Core Challenge")
+    description: str = Field(description="Engaging 2-3 sentence description that hooks the reader and explains the central conflict or opportunity.")
+    category: str = Field(description="Primary category from: Business, Science, Politics, Crisis Management, Technology, Social Issues, Healthcare, Education, Environment, International Relations")
     difficulty: Literal["Beginner", "Intermediate", "Advanced", "Expert"] = Field(description="Scenario difficulty level")
     estimated_duration: int = Field(description="Estimated play duration in minutes")
-    objectives: List[ObjectiveSchema] = Field(description="List of scenario objectives")
-    win_conditions: str = Field(description="Conditions for scenario success")
-    lose_conditions: str = Field(description="Conditions for scenario failure")
+    objectives: List[ObjectiveSchema] = Field(min_length=3, max_length=6, description="List of scenario objectives")
+    win_conditions: str = Field(description="Clear, specific success criteria that feel challenging but achievable within the scenario constraints")
+    lose_conditions: str = Field(description="Meaningful failure conditions that create stakes and tension without being punitive")
     max_turns: int = Field(description="Maximum number of turns/rounds")
-    scenario_opening_message: str = Field(description="Opening scene description")
-    characters: List[ScenarioCharacterSchema] = Field(description="Characters involved in the scenario")
+    initial_scene_prompt: str = Field(description="Rich, immersive opening that immediately places participants in the situation, establishes the setting, creates urgency, and provides just enough context to begin decision-making. Should be 3-5 sentences that make participants feel present and engaged.")
+    characters: List[ScenarioCharacterSchema] = Field(min_length=2, max_length=6, description="Characters involved in the scenario")
     tags: List[str] = Field(description="Tags for categorization and search")
     is_public: bool = Field(default=True, description="Whether scenario is publicly visible")
 
+class ScenarioInternalThoughtProcess(BaseModel):
+    """AI's internal monologue to plan a high-quality scenario."""
+    analysis: str = Field(..., description="My analysis of the user's request. What is the core concept of the scenario?")
+    title_idea: str = Field(..., description="My plan for the 'title' based on the guidelines.")
+    description_idea: str = Field(..., description="My plan for the 'description', ensuring it is engaging.")
+    objectives_idea: str = Field(..., description="My plan for the 'objectives', ensuring they are specific and measurable.")
+    characters_idea: str = Field(..., description="My plan for the 'characters', ensuring they have diverse roles and perspectives.")
+    initial_scene_prompt_idea: str = Field(..., description="A draft idea for the 'initial_scene_prompt' that is immersive.")
+
+class ChainOfThoughtScenarioSchema(BaseModel):
+    """
+    The new top-level schema that forces Chain-of-Thought for scenarios.
+    The AI fills 'internal_thought_process' first, then 'final_scenario'.
+    """
+    internal_thought_process: ScenarioInternalThoughtProcess = Field(..., description="Your structured plan to build the scenario, following all guidelines.")
+    final_scenario: ScenarioSchema = Field(..., description="The final, complete scenario JSON, built from your plan.")
 
 # --- Input Schemas ---
 
@@ -85,6 +106,23 @@ class CharacterCreationRequest(BaseModel):
     The user provides a single, natural language request.
     """
     user_request: str = Field(..., description="A natural language description of the character to be created.")
+
+
+class ScenarioCreationRequest(BaseModel):
+    """
+    Defines the strongly-typed input for *creating* a scenario.
+    The user provides a single, natural language request.
+    """
+    user_request: str = Field(..., description="A natural language description of the scenario to be created.")
+
+
+class ScenarioEditRequest(BaseModel):
+    """
+    Defines the strongly-typed inputs for *editing* a scenario.
+    It provides the user's instruction AND the full current scenario.
+    """
+    edit_request: str = Field(..., description="The user's specific natural language instruction for what to change.")
+    current_scenario: ScenarioSchema = Field(..., description="The full, current JSON object of the scenario to be edited.")
 
 
 class CharacterEditRequest(BaseModel):
