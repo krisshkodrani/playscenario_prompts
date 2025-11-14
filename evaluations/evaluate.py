@@ -291,13 +291,25 @@ def run_evaluation(
                 critique_client = llm_factory.get_client(critique_model_key)
 
                 # 3. Inject the original LLM's response into the critique prompt
-                # The character data is the 'final_character' part of the response
                 main_model_output_json = json.loads(strip_markdown(response_text))
-                character_data_json = json.dumps(main_model_output_json.get("final_character", {}), indent=2)
-                
+
+                # --- DYNAMIC DATA INJECTION (MODIFIED) ---
+                if "final_character" in main_model_output_json:
+                    data_to_critique = main_model_output_json.get("final_character", {})
+                    placeholder = "{{ character_data }}"
+                    CritiqueSchema = __import__("prompts.schemas", fromlist=["CharacterCritiqueScoreSchema"]).__dict__["CharacterCritiqueScoreSchema"]
+                elif "final_scenario" in main_model_output_json:
+                    data_to_critique = main_model_output_json.get("final_scenario", {})
+                    placeholder = "{{ scenario_data }}"
+                    CritiqueSchema = __import__("prompts.schemas", fromlist=["ScenarioCritiqueScoreSchema"]).__dict__["ScenarioCritiqueScoreSchema"]
+                else:
+                    raise ValueError("Could not find 'final_character' or 'final_scenario' in LLM output for AI critique.")
+
+                data_json_str = json.dumps(data_to_critique, indent=2)
                 user_prompt_for_critique = critique_prompt_template.replace(
-                    "{{ character_data }}", character_data_json
+                    placeholder, data_json_str
                 )
+                # --- END MODIFICATION ---
 
                 # 4. Generate the scored critique
                 critique_response_text = critique_client.generate(
@@ -307,26 +319,25 @@ def run_evaluation(
                 typer.echo(f"  Critique Response:\n{critique_response_text}")
 
                 # 5. Validate the critique response against the schema
-                from prompts.schemas import CritiqueScoreSchema
-                critique_scores = CritiqueScoreSchema.model_validate_json(strip_markdown(critique_response_text))
-                typer.secho("  [PASS] AI critique response is valid JSON and matches CritiqueScoreSchema.", fg=typer.colors.GREEN)
+                critique_scores = CritiqueSchema.model_validate_json(strip_markdown(critique_response_text))
+                typer.secho(f"  [PASS] AI critique response is valid JSON and matches {CritiqueSchema.__name__}.", fg=typer.colors.GREEN)
 
                 # 6. Check scores against thresholds
                 scores_passed = True
-                for metric, threshold in thresholds.items():
-                    score = getattr(critique_scores, metric, None)
+                for score_name, threshold in thresholds.items():
+                    score = getattr(critique_scores, score_name, None)
                     if score is None:
-                        result = f"Metric '{metric}' not found in critique response."
+                        result = f"Metric '{score_name}' not found in critique response."
                         typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
                         assertion_results.append(f"[FAIL] {result}")
                         scores_passed = False
                         continue
                     if score >= threshold:
-                        result = f"Metric '{metric}': {score} >= {threshold}"
+                        result = f"Metric '{score_name}': {score} >= {threshold}"
                         typer.secho(f"  [PASS] {result}", fg=typer.colors.GREEN)
                         assertion_results.append(f"[PASS] {result}")
                     else:
-                        result = f"Metric '{metric}': {score} < {threshold}"
+                        result = f"Metric '{score_name}': {score} < {threshold}"
                         typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
                         assertion_results.append(f"[FAIL] {result}")
                         scores_passed = False

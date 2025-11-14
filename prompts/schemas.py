@@ -158,3 +158,19 @@ class IntentRouterSchema(BaseModel):
     # Using a generic dict for arguments to remain flexible.
     # The application will be responsible for casting this to the correct Pydantic Input model.
     arguments: dict = Field(description="The arguments to pass to the factory method, conforming to the relevant Input Schema.")
+
+class CharacterCritiqueScoreSchema(BaseModel):
+    """
+    Defines the structured output for a scored AI critique for characters.
+    """
+    creativity: int = Field(..., description="Score (0-10) for how creative and imaginative the character concept is.")
+    depth: int = Field(..., description="Score (0-10) for how well-developed and multi-dimensional the character's personality and background are.")
+    originality: int = Field(..., description="Score (0-10) for how original and non-cliché the character is.")
+
+class ScenarioCritiqueScoreSchema(BaseModel):
+    """
+    Defines the structured output for a scored AI critique for scenarios.
+    """
+    creativity: int = Field(..., description="Score (0-10) for how creative and imaginative the scenario concept is.")
+    originality: int = Field(..., description="Score (0-10) for how original and non-cliché the plot and setting are.")
+    engagement: int = Field(..., description="Score (0-10) for how engaging and compelling the scenario's hooks and conflicts are.")

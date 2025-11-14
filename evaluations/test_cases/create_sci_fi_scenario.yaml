@@ -1,0 +1,16 @@
+agent: "scenario_helper"
+factory_method: "build_prompt_create"
+model: "gemini_flash_strict"
+inputs:
+  user_request: |
+    Create a science fiction scenario set in a dystopian future where corporations rule the world. The main character is a rebel hacker trying to expose a conspiracy. The scenario should be for advanced players and focus on stealth and puzzle-solving. It should include at least three other characters, one of whom is a double agent.
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "ChainOfThoughtScenarioSchema"
+  - type: "ai_critique"
+    prompt_path: "evaluations/critique_prompts/check_scenario_creativity_scored.txt"
+    critique_model: "gemini_flash_strict"
+    thresholds:
+      creativity: 5
+      originality: 4
+      engagement: 5

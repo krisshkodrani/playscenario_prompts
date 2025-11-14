@@ -1,0 +1,68 @@
+agent: "scenario_helper"
+factory_method: "build_prompt_edit"
+model: "gemini_flash_strict"
+inputs:
+  edit_request: "Change the difficulty to 'Beginner' and replace the double agent with a loyal sidekick."
+  current_scenario: 
+    title: "Corporate Shadow War"
+    description: "In a dystopian future ruled by corporations, a rebel hacker attempts to expose a world-altering conspiracy. This advanced scenario challenges players with intricate puzzles and high-stakes stealth missions."
+    category: "Science Fiction"
+    difficulty: "Advanced"
+    estimated_duration: 90
+    objectives:
+      - id: 1
+        description: "Infiltrate the corporate headquarters."
+        priority: "critical"
+      - id: 2
+        description: "Steal the incriminating data."
+        priority: "critical"
+      - id: 3
+        description: "Escape without being detected."
+        priority: "optional"
+    win_conditions: "Successfully expose the conspiracy."
+    lose_conditions: "Jax is captured or killed."
+    max_turns: 20
+    initial_scene_prompt: "You are Jax, a hacker known as 'Ghost'. You've just breached the outer defenses of OmniCorp, the corporation that ruined your family. Your mission is to find and expose their darkest secret, codenamed 'Project Chimera'. The entire world is watching."
+    characters:
+      - name: "Jax"
+        role: "Protagonist"
+        personality: "A brilliant hacker with a personal vendetta against the ruling corporation."
+        expertise_keywords: ["hacking", "social engineering"]
+        background: "Jax's family was ruined by the corporation."
+        appearance: "Hoodie and a laptop."
+        goals: "Expose the conspiracy."
+        fears: "Being caught."
+        notable_quotes: "I'm in."
+        is_player_character: true
+      - name: "Silas"
+        role: "Antagonist"
+        personality: "The enigmatic double agent whose true loyalties are unknown."
+        expertise_keywords: ["espionage", "combat"]
+        background: "A former corporate enforcer."
+        appearance: "Sharp suit."
+        goals: "Survive."
+        fears: "His past."
+        notable_quotes: "You don't know who you're dealing with."
+        is_player_character: false
+      - name: "Eva"
+        role: "Ally"
+        personality: "A resourceful black market trader who provides Jax with illegal tech."
+        expertise_keywords: ["negotiation", "technology"]
+        background: "Operates in the city's underbelly."
+        appearance: "Cyberpunk gear."
+        goals: "Profit."
+        fears: "Losing her business."
+        notable_quotes: "Everything has a price."
+        is_player_character: false
+    tags: ["sci-fi", "dystopian", "cyberpunk"]
+    is_public: true
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "ChainOfThoughtScenarioSchema"
+  - type: "ai_critique"
+    prompt_path: "evaluations/critique_prompts/check_scenario_creativity_scored.txt"
+    critique_model: "gemini_flash_strict"
+    thresholds:
+      creativity: 3
+      engagement: 3
+      originality: 3
