@@ -3,13 +3,13 @@ agents:
     model: "gemini_flash_strict"
 
   character_helper_create:
-    model: "gemini_pro_creative"
+    model: "gemini_flash_strict"
 
   character_helper_edit:
-    model: "mistral_large"
+    model: "gemini_flash_strict"
 
   moderator:
     model: "gemini_flash_strict"
 
   scenario_feedback:
-    model: "openai_gpt4"
+    model: "gemini_flash_strict"

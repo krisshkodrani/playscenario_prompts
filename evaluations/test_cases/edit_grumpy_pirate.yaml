@@ -4,8 +4,8 @@ agent: "character_helper"
 factory_method: "build_prompt_edit"
 
 # We'll map this to a specific model in our agents.yaml
-# For this test, let's assume 'character_helper_edit' maps to 'gemini_pro_creative'
-model: "gemini_pro_creative"
+# For this test, let's assume 'character_helper_edit' maps to 'gemini_flash_strict'
+model: "gemini_flash_strict"
 
 # The strongly-typed Pydantic request object
 inputs:

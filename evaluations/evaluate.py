@@ -239,7 +239,7 @@ def main(
                 expected_response = assertion.get("expected")
 
                 # Use a powerful model for critique
-                critique_client = llm_factory.get_client("gemini_pro_creative")
+                critique_client = llm_factory.get_client("gemini_flash_strict")
                 critique_response = critique_client.generate(
                     system_prompt="You are an AI evaluator. Please follow the user's instructions precisely.",
                     user_prompt=f"{critique_prompt}\n\nOriginal LLM Response:\n{response_text}"
