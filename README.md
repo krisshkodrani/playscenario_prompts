@@ -57,10 +57,24 @@ The evaluation harness (`evaluations/evaluate.py`) is a command-line tool used t
 
 **Usage:**
 ```bash
-python evaluations/evaluate.py <path_to_test_case.yaml>
+python evaluations/evaluate.py <path_to_test_case.yaml | all> [--report]
 ```
 
-**Example:**
-```bash
-python evaluations/evaluate.py evaluations/test_cases/create_grumpy_pirate.yaml
-```
+**Examples:**
+
+*   **Run a single test case:**
+    ```bash
+    python evaluations/evaluate.py evaluations/test_cases/create_grumpy_pirate.yaml
+    ```
+*   **Run all test cases:**
+    ```bash
+    python evaluations/evaluate.py all
+    ```
+*   **Run a single test case and generate a report:**
+    ```bash
+    python evaluations/evaluate.py evaluations/test_cases/create_grumpy_pirate.yaml --report
+    ```
+*   **Run all test cases and generate a report for each:**
+    ```bash
+    python evaluations/evaluate.py all --report
+    ```
