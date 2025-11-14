@@ -6,6 +6,7 @@ import re
 from typing import Dict, Any, Optional
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Import SDKs
 import google.generativeai as genai
@@ -98,15 +99,39 @@ def strip_markdown(text: str) -> str:
     """Strips markdown code blocks from a string."""
     return re.sub(r"```json\n(.*?)\n```", r"\1", text, flags=re.DOTALL)
 
-def main(
-    test_case_path: str = typer.Argument(..., help="Path to the .yaml test case file."),
-    models_config_path: str = typer.Option("config/models.yaml", help="Path to the models config file."),
-    agents_config_path: str = typer.Option("config/agents.yaml", help="Path to the agents config file."),
+
+def generate_report(
+    test_case_name: str,
+    model_id: str,
+    llm_output: str,
+    assertion_results: list[str]
+) -> str:
+    """Generates a markdown report of the evaluation."""
+    report = f"# Evaluation Report for {test_case_name}\n\n"
+    report += f"**Timestamp**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    report += f"**Model ID**: {model_id}\n\n"
+
+    report += "## LLM Output\n"
+    report += "```json\n"
+    report += llm_output
+    report += "\n```\n\n"
+
+    report += "## Assertions\n"
+    for result in assertion_results:
+        report += f"- {result}\n"
+
+    return report
+
+
+def run_evaluation(
+    test_case_path: str,
+    report: bool,
+    models_config_path: str,
+    agents_config_path: str,
 ):
     """
-    A CLI tool to run evaluations on prompts using live AI models.
+    Runs a single evaluation for a given test case file.
     """
-    load_dotenv()
     typer.echo(f"Running evaluation for: {test_case_path}")
 
     # 1. Load Configurations
@@ -188,6 +213,7 @@ def main(
         typer.echo("No assertions defined.")
 
     all_assertions_passed = True
+    assertion_results = []
     for assertion in assertions:
         assertion_type = assertion.get("type")
         typer.echo(f"Running assertion: {assertion_type}")
@@ -198,9 +224,13 @@ def main(
                 # Dynamically get the schema class from prompts.schemas
                 SchemaToValidate = __import__("prompts.schemas", fromlist=[assertion.get("schema")]).__dict__[assertion.get("schema")]
                 SchemaToValidate.model_validate_json(strip_markdown(response_text))
-                typer.secho(f"  [PASS] Response validates against {assertion.get('schema')}", fg=typer.colors.GREEN)
+                result = f"[PASS] Response validates against {assertion.get('schema')}"
+                typer.secho(f"  {result}", fg=typer.colors.GREEN)
+                assertion_results.append(result)
             except Exception as e:
-                typer.secho(f"  [FAIL] Pydantic validation failed: {e}", fg=typer.colors.RED)
+                result = f"[FAIL] Pydantic validation failed: {e}"
+                typer.secho(f"  {result}", fg=typer.colors.RED)
+                assertion_results.append(result)
                 all_assertions_passed = False
 
         elif assertion_type == "field_contains":
@@ -211,12 +241,18 @@ def main(
                 field_value = response_json.get(field, "")
 
                 if all(val in field_value for val in expected_values):
-                    typer.secho(f"  [PASS] Field '{field}' contains expected values.", fg=typer.colors.GREEN)
+                    result = f"Field '{field}' contains expected values."
+                    typer.secho(f"  [PASS] {result}", fg=typer.colors.GREEN)
+                    assertion_results.append(f"[PASS] {result}")
                 else:
-                    typer.secho(f"  [FAIL] Field '{field}' did not contain all expected values.", fg=typer.colors.RED)
+                    result = f"Field '{field}' did not contain all expected values."
+                    typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                    assertion_results.append(f"[FAIL] {result}")
                     all_assertions_passed = False
             except json.JSONDecodeError:
-                typer.secho("  [FAIL] Could not parse LLM response as JSON.", fg=typer.colors.RED)
+                result = "Could not parse LLM response as JSON."
+                typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                assertion_results.append(f"[FAIL] {result}")
                 all_assertions_passed = False
 
         elif assertion_type == "field_not_contains":
@@ -227,12 +263,18 @@ def main(
                 field_value = response_json.get(field, "")
 
                 if not any(val in field_value for val in unexpected_values):
-                    typer.secho(f"  [PASS] Field '{field}' does not contain unexpected values.", fg=typer.colors.GREEN)
+                    result = f"Field '{field}' does not contain unexpected values."
+                    typer.secho(f"  [PASS] {result}", fg=typer.colors.GREEN)
+                    assertion_results.append(f"[PASS] {result}")
                 else:
-                    typer.secho(f"  [FAIL] Field '{field}' contained unexpected values.", fg=typer.colors.RED)
+                    result = f"Field '{field}' contained unexpected values."
+                    typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                    assertion_results.append(f"[FAIL] {result}")
                     all_assertions_passed = False
             except json.JSONDecodeError:
-                typer.secho("  [FAIL] Could not parse LLM response as JSON.", fg=typer.colors.RED)
+                result = "Could not parse LLM response as JSON."
+                typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                assertion_results.append(f"[FAIL] {result}")
                 all_assertions_passed = False
 
         elif assertion_type == "ai_critique":
@@ -274,23 +316,33 @@ def main(
                 for metric, threshold in thresholds.items():
                     score = getattr(critique_scores, metric, None)
                     if score is None:
-                        typer.secho(f"  [FAIL] Metric '{metric}' not found in critique response.", fg=typer.colors.RED)
+                        result = f"Metric '{metric}' not found in critique response."
+                        typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                        assertion_results.append(f"[FAIL] {result}")
                         scores_passed = False
                         continue
                     if score >= threshold:
-                        typer.secho(f"  [PASS] Metric '{metric}': {score} >= {threshold}", fg=typer.colors.GREEN)
+                        result = f"Metric '{metric}': {score} >= {threshold}"
+                        typer.secho(f"  [PASS] {result}", fg=typer.colors.GREEN)
+                        assertion_results.append(f"[PASS] {result}")
                     else:
-                        typer.secho(f"  [FAIL] Metric '{metric}': {score} < {threshold}", fg=typer.colors.RED)
+                        result = f"Metric '{metric}': {score} < {threshold}"
+                        typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                        assertion_results.append(f"[FAIL] {result}")
                         scores_passed = False
                 
                 if not scores_passed:
                     all_assertions_passed = False
 
             except FileNotFoundError:
-                typer.secho(f"  [FAIL] Critique prompt file not found at '{prompt_path}'.", fg=typer.colors.RED)
+                result = f"Critique prompt file not found at '{prompt_path}'."
+                typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                assertion_results.append(f"[FAIL] {result}")
                 all_assertions_passed = False
             except (json.JSONDecodeError, Exception) as e:
-                typer.secho(f"  [FAIL] AI critique failed with an error: {e}", fg=typer.colors.RED)
+                result = f"AI critique failed with an error: {e}"
+                typer.secho(f"  [FAIL] {result}", fg=typer.colors.RED)
+                assertion_results.append(f"[FAIL] {result}")
                 all_assertions_passed = False
 
     typer.secho("\n--- Evaluation Summary ---", fg=typer.colors.BRIGHT_BLUE)
@@ -298,6 +350,54 @@ def main(
         typer.secho("All assertions passed!", fg=typer.colors.BRIGHT_GREEN)
     else:
         typer.secho("Some assertions failed.", fg=typer.colors.BRIGHT_RED)
+
+    if report:
+        os.makedirs("reports", exist_ok=True)
+        test_case_name = os.path.splitext(os.path.basename(test_case_path))[0]
+        timestamp = datetime.now().strftime("%m_%d_%H_%M")
+        report_filename = f"reports/{test_case_name}_{timestamp}.md"
+
+        report_content = generate_report(
+            test_case_name=test_case_name,
+            model_id=model_key,
+            llm_output=response_text,
+            assertion_results=assertion_results,
+        )
+
+        with open(report_filename, "w") as f:
+            f.write(report_content)
+
+        typer.secho(f"\nReport generated: {report_filename}", fg=typer.colors.BLUE)
+
+
+def main(
+    test_case_path: str = typer.Argument(..., help="Path to the .yaml test case file, or 'all' to run all tests."),
+    report: bool = typer.Option(False, "--report", help="Generate a markdown report."),
+    models_config_path: str = typer.Option("config/models.yaml", help="Path to the models config file."),
+    agents_config_path: str = typer.Option("config/agents.yaml", help="Path to the agents config file."),
+):
+    """
+    A CLI tool to run evaluations on prompts using live AI models.
+    """
+    load_dotenv()
+
+    if test_case_path.lower() == "all":
+        typer.echo("Running all test cases...")
+        test_case_dir = "evaluations/test_cases"
+        try:
+            test_case_files = [os.path.join(test_case_dir, f) for f in os.listdir(test_case_dir) if f.endswith(".yaml")]
+            if not test_case_files:
+                typer.secho(f"No .yaml files found in {test_case_dir}", fg=typer.colors.YELLOW)
+                return
+        except FileNotFoundError:
+            typer.secho(f"Error: Test case directory not found at '{test_case_dir}'", fg=typer.colors.RED)
+            raise typer.Exit(1)
+
+        for test_file in test_case_files:
+            run_evaluation(test_file, report, models_config_path, agents_config_path)
+            typer.echo("-" * 40) # Separator
+    else:
+        run_evaluation(test_case_path, report, models_config_path, agents_config_path)
 
 
 if __name__ == "__main__":
