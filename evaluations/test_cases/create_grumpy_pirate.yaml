@@ -28,6 +28,6 @@ assertions:
     prompt_path: "evaluations/critique_prompts/check_creativity_scored.txt"
     critique_model: "gemini_flash_strict"
     thresholds:
-      creativity: 3
-      depth: 3
-      originality: 3
+      creativity: 5
+      depth: 5
+      originality: 5

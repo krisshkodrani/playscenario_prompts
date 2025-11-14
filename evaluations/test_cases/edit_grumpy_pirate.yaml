@@ -30,3 +30,11 @@ inputs:
 assertions:
   - type: "is_valid_pydantic_schema"
     schema: "ChainOfThoughtCharacterSchema"
+
+  - type: "ai_critique"
+    prompt_path: "evaluations/critique_prompts/check_creativity_scored.txt"
+    critique_model: "gemini_flash_strict"
+    thresholds:
+      creativity: 3
+      depth: 3
+      originality: 3
