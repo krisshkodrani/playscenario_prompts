@@ -5,6 +5,7 @@ import json
 import re
 from typing import Dict, Any, Optional
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
 
 # Import SDKs
 import google.generativeai as genai
@@ -105,6 +106,7 @@ def main(
     """
     A CLI tool to run evaluations on prompts using live AI models.
     """
+    load_dotenv()
     typer.echo(f"Running evaluation for: {test_case_path}")
 
     # 1. Load Configurations
@@ -235,22 +237,59 @@ def main(
 
         elif assertion_type == "ai_critique":
             try:
-                critique_prompt = assertion.get("prompt")
-                expected_response = assertion.get("expected")
+                prompt_path = assertion.get("prompt_path")
+                thresholds = assertion.get("thresholds", {})
+                critique_model_key = assertion.get("critique_model", "gemini_flash_strict") # Default model
 
-                # Use a powerful model for critique
-                critique_client = llm_factory.get_client("gemini_flash_strict")
-                critique_response = critique_client.generate(
-                    system_prompt="You are an AI evaluator. Please follow the user's instructions precisely.",
-                    user_prompt=f"{critique_prompt}\n\nOriginal LLM Response:\n{response_text}"
+                # 1. Load the critique prompt from the specified file
+                with open(prompt_path, 'r') as f:
+                    critique_prompt_template = f.read()
+
+                # 2. Get the critique client
+                critique_client = llm_factory.get_client(critique_model_key)
+
+                # 3. Inject the original LLM's response into the critique prompt
+                # The character data is the 'final_character' part of the response
+                main_model_output_json = json.loads(strip_markdown(response_text))
+                character_data_json = json.dumps(main_model_output_json.get("final_character", {}), indent=2)
+                
+                user_prompt_for_critique = critique_prompt_template.replace(
+                    "{{ character_data }}", character_data_json
                 )
 
-                if expected_response.lower() in critique_response.lower():
-                    typer.secho(f"  [PASS] AI critique passed. Expected '{expected_response}'.", fg=typer.colors.GREEN)
-                else:
-                    typer.secho(f"  [FAIL] AI critique failed. Expected '{expected_response}', but got '{critique_response}'.", fg=typer.colors.RED)
+                # 4. Generate the scored critique
+                critique_response_text = critique_client.generate(
+                    system_prompt="You are an AI evaluator. Follow the user's instructions precisely.",
+                    user_prompt=user_prompt_for_critique
+                )
+                typer.echo(f"  Critique Response:\n{critique_response_text}")
+
+                # 5. Validate the critique response against the schema
+                from prompts.schemas import CritiqueScoreSchema
+                critique_scores = CritiqueScoreSchema.model_validate_json(strip_markdown(critique_response_text))
+                typer.secho("  [PASS] AI critique response is valid JSON and matches CritiqueScoreSchema.", fg=typer.colors.GREEN)
+
+                # 6. Check scores against thresholds
+                scores_passed = True
+                for metric, threshold in thresholds.items():
+                    score = getattr(critique_scores, metric, None)
+                    if score is None:
+                        typer.secho(f"  [FAIL] Metric '{metric}' not found in critique response.", fg=typer.colors.RED)
+                        scores_passed = False
+                        continue
+                    if score >= threshold:
+                        typer.secho(f"  [PASS] Metric '{metric}': {score} >= {threshold}", fg=typer.colors.GREEN)
+                    else:
+                        typer.secho(f"  [FAIL] Metric '{metric}': {score} < {threshold}", fg=typer.colors.RED)
+                        scores_passed = False
+                
+                if not scores_passed:
                     all_assertions_passed = False
-            except Exception as e:
+
+            except FileNotFoundError:
+                typer.secho(f"  [FAIL] Critique prompt file not found at '{prompt_path}'.", fg=typer.colors.RED)
+                all_assertions_passed = False
+            except (json.JSONDecodeError, Exception) as e:
                 typer.secho(f"  [FAIL] AI critique failed with an error: {e}", fg=typer.colors.RED)
                 all_assertions_passed = False
 

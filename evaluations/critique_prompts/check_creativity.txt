@@ -1,9 +1,0 @@
-You are a literary critic. Analyze the following character profile for creativity and originality.
-Is the character cliché or well-developed? Provide a brief critique.
-
-Character Profile:
----
-{{ character_data }}
----
-
-Critique:

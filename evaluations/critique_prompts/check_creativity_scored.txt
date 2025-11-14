@@ -1,0 +1,44 @@
+You are a literary critic. Your task is to analyze the following character profile for creativity, depth, and originality.
+You must respond with a valid JSON object that conforms to the `CritiqueScoreSchema`.
+
+Do not add any other text, just the JSON object.
+
+**CritiqueScoreSchema:**
+```json
+{
+  "creativity": "Score (0-10) for how creative and imaginative the character concept is.",
+  "depth": "Score (0-10) for how well-developed and multi-dimensional the character's personality and background are.",
+  "originality": "Score (0-10) for how original and non-cliché the character is."
+}
+```
+
+**Example Character Profile:**
+---
+{
+  "name": "Sir Reginald 'Reggie' Featherbottom",
+  "role": "The Reluctant Knight",
+  "appearance": "A man of average height and build, with a perpetually worried expression. He wears ill-fitting armor that clanks with every step.",
+  "personality": "Reggie is a kind soul who would rather be gardening than fighting dragons. He is constantly apologizing and is terrified of conflict.",
+  "expertise_keywords": ["Gardening", "Apologizing", "Running Away"],
+  "background": "A simple gardener who was mistaken for a great warrior and knighted by a short-sighted king. He now travels the land, trying to avoid any and all adventure.",
+  "goals": "To return to his quiet life as a gardener.",
+  "fears": "Dragons, loud noises, and confrontation.",
+  "notable_quotes": "Oh, I'm terribly sorry! | Are you sure you have the right person? | I'd really rather not."
+}
+---
+
+**Example JSON Response:**
+```json
+{
+  "creativity": 5,
+  "depth": 4,
+  "originality": 3
+}
+```
+
+**Character Profile to Evaluate:**
+---
+{{ character_data }}
+---
+
+**Your JSON Response:**

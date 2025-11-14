@@ -69,6 +69,16 @@ class ScenarioSchema(BaseModel):
 
 # --- Input Schemas ---
 
+class CritiqueScoreSchema(BaseModel):
+    """
+    Defines the structured output for a scored AI critique.
+    The schema ensures that the critique model returns a consistent,
+    machine-readable JSON object with specific metrics.
+    """
+    creativity: int = Field(..., description="Score (0-10) for how creative and imaginative the character concept is.")
+    depth: int = Field(..., description="Score (0-10) for how well-developed and multi-dimensional the character's personality and background are.")
+    originality: int = Field(..., description="Score (0-10) for how original and non-cliché the character is.")
+
 class CharacterCreationRequest(BaseModel):
     """
     Defines the strongly-typed inputs for *creating* a character,
