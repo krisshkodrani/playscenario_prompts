@@ -50,7 +50,7 @@ class CharacterHelperPromptFactory:
         CharacterCreationRequest object.
         """
         system_prompt = self.get_system_prompt_create()
-        user_prompt = self._user_create_template.render(**request.model_dump(exclude_unset=True)).strip() + "\n"
+        user_prompt = self._user_create_template.render(**request.model_dump()).strip() + "\n"
         return {"system": system_prompt, "user": user_prompt}
 
     # --- (NEW) EDIT METHODS ---

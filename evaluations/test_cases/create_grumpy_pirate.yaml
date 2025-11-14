@@ -9,12 +9,14 @@ model: "gemini_flash_strict"
 
 # The strongly-typed Pydantic request object
 inputs:
-  role_notes: "A grumpy, old pirate who has lost his treasure."
-  personality_notes: "Cynical, sarcastic, but with a hidden heart of gold. Hates parrots."
-  background_notes: "Was once the most feared pirate on the seven seas, but was betrayed by his first mate. Now lives in exile, searching for his stolen treasure."
-  expertise_notes: "Expert swordsman, master navigator, terrible singer."
-  goal_notes: "Find his treasure, get revenge on his first mate, and retire to a quiet island."
-  other_notes: "Has a pet crab named 'Pinchy'."
+  user_request: |
+    Create a character with the following attributes:
+    - Role: A grumpy, old pirate who has lost his treasure.
+    - Personality: Cynical, sarcastic, but with a hidden heart of gold. Hates parrots.
+    - Background: Was once the most feared pirate on the seven seas, but was betrayed by his first mate. Now lives in exile, searching for his stolen treasure.
+    - Expertise: Expert swordsman, master navigator, terrible singer.
+    - Goal: Find his treasure, get revenge on his first mate, and retire to a quiet island.
+    - Other: Has a pet crab named 'Pinchy'.
 
 
 # List of assertions to run on the LLM's response

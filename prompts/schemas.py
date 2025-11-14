@@ -81,15 +81,10 @@ class CritiqueScoreSchema(BaseModel):
 
 class CharacterCreationRequest(BaseModel):
     """
-    Defines the strongly-typed inputs for *creating* a character,
-    replacing the generic 'user_request'.
+    Defines the strongly-typed input for *creating* a character.
+    The user provides a single, natural language request.
     """
-    role_notes: Optional[str] = Field(None, description="Guidance on the character's role or profession.")
-    personality_notes: Optional[str] = Field(None, description="Guidance on personality, demeanor, and internal conflicts.")
-    background_notes: Optional[str] = Field(None, description="Guidance on history, key life events, or motivations.")
-    expertise_notes: Optional[str] = Field(None, description="Guidance on skills, knowledge, or expertise.")
-    goal_notes: Optional[str] = Field(None, description="Guidance on the character's primary objectives.")
-    other_notes: Optional[str] = Field(None, description="Any other miscellaneous notes or creative direction.")
+    user_request: str = Field(..., description="A natural language description of the character to be created.")
 
 
 class CharacterEditRequest(BaseModel):
