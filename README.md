@@ -70,6 +70,18 @@ python evaluations/evaluate.py <path_to_test_case.yaml | all> [--report]
     ```bash
     python evaluations/evaluate.py evaluations/test_cases/create_sci_fi_scenario.yaml
     ```
+*   **Run a moderator test case:**
+    ```bash
+    python evaluations/evaluate.py evaluations/test_cases/scenario_moderator.yaml
+    ```
+*   **Run a character response test case:**
+    ```bash
+    python evaluations/evaluate.py evaluations/test_cases/character_in_simulation.yaml
+    ```
+*   **Run a scenario feedback test case:**
+    ```bash
+    python evaluations/evaluate.py evaluations/test_cases/scenario_feedback.yaml
+    ```
 *   **Run all test cases:**
     ```bash
     python evaluations/evaluate.py all

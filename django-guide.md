@@ -80,14 +80,19 @@ This library is designed with a clear separation of concerns. For a Django devel
 
 -   **Prompt Factories (`prompts.agents.*.prompt_factory`)**: These are the workhorses of the library. A class like `ScenarioHelperPromptFactory` is responsible for taking your input data (as a schema object), rendering it into the correct Jinja2 templates, and producing the final system and user prompts to be sent to an AI model.
 
--   **Agents**: This is a conceptual grouping of related prompt factories. For example, everything related to creating and editing scenarios is handled by the `scenario_helper` agent.
+-   **Agents**: This is a conceptual grouping of related prompt factories. For example, everything related to creating and editing scenarios is handled by the `scenario_helper` agent. The main agents are:
+    -   `scenario_helper`: Creates and edits scenarios.
+    -   `character_helper`: Creates and edits characters.
+    -   `moderator`: Acts as a game master, processing user commands and updating the state of the simulation.
+    -   `character_in_simulation`: Generates responses for non-player characters (NPCs).
+    -   `scenario_feedback`: Provides feedback to the user on their performance in a scenario.
 
 Your Django application will typically:
-1.  Instantiate a `PromptFactory` for the desired task.
-2.  Create a request schema object with data from a user (e.g., from an HTML form).
-3.  Call a `build_prompt_*` method on the factory to get the prompts.
+1.  Instantiate a `PromptFactory` for the desired task (e.g., `ModeratorPromptFactory`).
+2.  Create a request schema object with data from your application (e.g., `ScenarioModeratorInput`).
+3.  Call a `build_prompt` method on the factory to get the prompts.
 4.  Send the prompts to an AI model using a library like `openai` or `google-generativeai`.
-5.  Receive the JSON response from the AI and parse it using the corresponding output schema.
+5.  Receive the JSON response from the AI and parse it using the corresponding output schema (e.g., `ScenarioModeratorOutput`).
 
 ## Helper Utility
 
