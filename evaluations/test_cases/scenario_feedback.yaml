@@ -1,0 +1,25 @@
+agent: "scenario_feedback"
+factory_method: "build_prompt"
+model: "gemini_flash_strict"
+inputs:
+  scenario_title: "Hostage Negotiation"
+  scenario_id: "hn-123"
+  instance_id: "inst-456"
+  user_id: "user-789"
+  prompt_version: "1.0"
+  user_profile:
+    name: "Alex"
+    age: 32
+  transcript:
+    - character: "Alex"
+      line: "I'm coming in. I just want to talk."
+    - character: "Robber"
+      line: "Don't come any closer! I'm warning you!"
+    - character: "Alex"
+      line: "I'm not here to hurt you. I just want to understand what's happening."
+  performance_metrics:
+    relationship_change: 10
+  detail_level: "normal"
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "ScenarioFeedbackSchema"

@@ -134,6 +134,64 @@ class CharacterEditRequest(BaseModel):
     current_character: CharacterSchema = Field(..., description="The full, current JSON object of the character to be edited.")
 
 
+class UserProfileSchema(BaseModel):
+    """A minimal user profile."""
+    name: str = Field(description="User's name")
+    age: int = Field(description="User's age")
+
+
+class TranscriptItemSchema(BaseModel):
+    """A single entry in a transcript."""
+    character: str = Field(description="The character speaking")
+    line: str = Field(description="The spoken line")
+
+
+class PerformanceMetricsSchema(BaseModel):
+    """A set of performance metrics."""
+    relationship_change: int = Field(description="The change in relationship score")
+
+
+class ScenarioFeedbackRequest(BaseModel):
+    """
+    Defines the strongly-typed input for requesting scenario feedback.
+    """
+    scenario_title: str
+    scenario_id: str
+    instance_id: str
+    user_id: str
+    prompt_version: str
+    user_profile: UserProfileSchema
+    transcript: List[TranscriptItemSchema]
+    performance_metrics: PerformanceMetricsSchema
+    detail_level: str
+
+
+class AchievementSchema(BaseModel):
+    """An achievement of the user."""
+    description: str = Field(description="A description of the achievement")
+
+
+class SuggestionSchema(BaseModel):
+    """A suggestion for the user."""
+    description: str = Field(description="A description of the suggestion")
+
+
+class RelationshipSchema(BaseModel):
+    """A relationship analysis."""
+    character: str = Field(description="The character in the relationship")
+    analysis: str = Field(description="An analysis of the relationship")
+
+
+class ScenarioFeedbackSchema(BaseModel):
+    """
+    Defines the expected JSON output from the AI for scenario feedback.
+    """
+    achievements: List[AchievementSchema]
+    suggestions: List[SuggestionSchema]
+    relationships: List[RelationshipSchema]
+    motivational_summary: str
+
+
 # --- Router Schemas ---
 
 class IntentRouterSchema(BaseModel):
