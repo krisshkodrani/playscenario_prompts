@@ -1,0 +1,69 @@
+# Test Case: Scenario Moderator
+agent: "moderator"
+factory_method: "build_prompt"
+
+model: "gemini_flash_strict"
+
+inputs:
+  simulation_name: "Project Chimera"
+  scenario_description: "A team of scientists must contain a biological agent that has escaped from a high-security lab."
+  initial_scene: "The team is gathered in the lab's briefing room. Alarms are blaring."
+  current_scene: "Dr. Evelyn Reed is examining the-containment chamber's-telemetry, while Dr. Kenji Tanaka is preparing a sample of the agent for analysis."
+  characters:
+    - name: "Dr. Evelyn Reed"
+      role: "Lead Virologist"
+      expertise: "Viral Containment, Genetic Sequencing"
+      expertise_keywords: ["Viral Containment", "Genetic Sequencing"]
+      personality: "Calm under pressure, analytical, and decisive."
+      is_player_character: true
+      background: "Former CDC operative with a reputation for handling high-stakes outbreaks."
+      appearance: "Sharp, focused eyes and a no-nonsense demeanor."
+      goals: "Contain the agent and prevent a pandemic."
+      fears: "A repeat of the 'K-7' incident."
+      notable_quotes: "We need to work the problem, not the panic."
+    - name: "Dr. Kenji Tanaka"
+      role: "Geneticist"
+      expertise: "Gene Editing, Bioinformatics"
+      expertise_keywords: ["Gene Editing", "Bioinformatics"]
+      personality: "Cautious, meticulous, and collaborative."
+      is_player_character: false
+      background: "A rising star in the field of synthetic biology."
+      appearance: "Neat, organized, and always has a data pad in hand."
+      goals: "Understand the agent's genetic makeup."
+      fears: "Making a mistake that could have catastrophic consequences."
+      notable_quotes: "Let's not jump to conclusions. We need more data."
+  objectives:
+    - description: "Analyze the agent's genetic sequence."
+      importance: "critical"
+    - description: "Develop a counter-agent."
+      importance: "critical"
+    - description: "Seal the lab and prevent the agent from spreading."
+      importance: "important"
+  objectives_progress:
+      "Analyze the agent's genetic sequence.":
+          completion_percentage: 10
+          status: "in progress"
+          progress_notes: "Dr. Tanaka is preparing the sample for the sequencer."
+          last_score: 0
+  command_types:
+      - name: "DO"
+        example: "/do try to open the door"
+        description: "Perform an action that changes the scene."
+      - name: "SAY"
+        example: "/say We need to work together on this."
+        description: "Respond verbally/dialogue only."
+  emergency_keywords:
+    - "breach"
+    - "containment failure"
+    - "outbreak"
+  is_action_command: false
+  user_input: "/say Dr. Tanaka, what have you found?"
+
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "ScenarioModeratorOutput"
+  - type: "field_contains"
+    field: "chosen_characters"
+    expected:
+      - name: "Dr. Kenji Tanaka"
+        strategy: "er"

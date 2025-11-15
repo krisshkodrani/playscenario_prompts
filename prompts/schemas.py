@@ -297,3 +297,44 @@ class CharacterInSimulationInput(BaseModel):
     command_type: str
     user_input: str
     character_examples: Optional[List[CharacterExample]] = None
+
+
+# --- Scenario Moderator Schemas ---
+
+class ObjectiveScore(BaseModel):
+    objective: str = Field(..., description="The description of the objective being scored.")
+    score: int = Field(..., ge=0, le=5, description="The score for the objective, from 0 to 5.")
+
+class ChosenCharacter(BaseModel):
+    name: str = Field(..., description="The name of the character chosen to act or speak.")
+    strategy: Literal["er", "em", "cf", "br", "fb"] = Field(..., description="The strategy chosen for the character.")
+
+class ScenarioModeratorOutput(BaseModel):
+    decision: Literal["ALLOW", "WARNING", "BLOCK", "ERROR"] = Field(..., description="The policy decision for the user's action.")
+    policy_reason: str = Field(..., description="The reason for the policy decision.")
+    objective_scores: List[ObjectiveScore] = Field(..., description="A list of objective scores.")
+    tone: int = Field(..., ge=0, le=5, description="The tone of the user's input, from 0 to 5.")
+    novelty: int = Field(..., ge=0, le=5, description="The novelty of the user's input, from 0 to 5.")
+    chosen_characters: List[ChosenCharacter] = Field(..., description="The character(s) chosen to act or speak.")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="The confidence in the decision, from 0.0 to 1.0.")
+    emergency: bool = Field(..., description="Whether an emergency keyword was detected.")
+    narrator_consequence: Optional[str] = Field(None, description="The narrator consequence for an action command.")
+    updated_scene_summary: Optional[str] = Field(None, description="The updated scene summary after an action command.")
+
+class CommandType(BaseModel):
+    name: str
+    example: str
+    description: str
+
+class ScenarioModeratorInput(BaseModel):
+    simulation_name: str
+    scenario_description: str
+    initial_scene: str
+    current_scene: str
+    characters: List[ScenarioCharacterSchema]
+    objectives: List[ScenarioObjective]
+    objectives_progress: Optional[dict[str, ObjectiveProgress]] = None
+    command_types: List[CommandType]
+    emergency_keywords: List[str]
+    is_action_command: bool
+    user_input: str
