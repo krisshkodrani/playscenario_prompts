@@ -1,0 +1,30 @@
+# Test Case: Character in Simulation
+agent: "character_in_simulation"
+factory_method: "build_prompt"
+
+model: "gemini_flash_strict"
+
+inputs:
+  character_name: "Dr. Aris Thorne"
+  simulation_name: "Temporal Rift"
+  character_role: "Lead Scientist"
+  character_expertise: "Temporal Physics, Anomaly Detection"
+  character_personality: "Brilliant, obsessive, and socially awkward. Places research above all, creating conflict with pragmatic teams. Harbors a deep fear of his discoveries being misused."
+  character_behaviors:
+    - "When stressed, he becomes withdrawn and speaks in clipped, technical jargon."
+    - "He is fiercely protective of his research and is wary of sharing his findings with others."
+    - "He has a dry sense of humor that only emerges when he is comfortable with someone."
+  selected_strategy: "er"
+  emergency_keywords:
+    - "paradox"
+    - "timeline collapse"
+    - "temporal breach"
+  scenario_description: "A temporal rift has opened in the laboratory, causing reality to fluctuate. The team must work together to close the rift before it's too late."
+  current_scene: "The team has just discovered the rift and is trying to understand its nature."
+  conversation_history: []
+  command_type: "initial_assessment"
+  user_input: "Dr. Thorne, what are we looking at here?"
+
+assertions:
+  - type: "is_valid_pydantic_schema"
+    schema: "CharacterInSimulationOutput"
