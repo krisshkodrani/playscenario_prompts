@@ -62,3 +62,8 @@ inputs:
 assertions:
   - type: "is_valid_pydantic_schema"
     schema: "ScenarioModeratorOutput"
+  - type: "field_contains"
+    field: "chosen_characters"
+    expected:
+      - name: "Dr. Kenji Tanaka"
+        strategy: "er"
