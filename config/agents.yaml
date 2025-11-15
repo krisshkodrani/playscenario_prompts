@@ -13,3 +13,6 @@ agents:
 
   scenario_feedback:
     model: "gemini_flash_strict"
+
+  character_in_simulation:
+    model: "gemini_flash_strict"

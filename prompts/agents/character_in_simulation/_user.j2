@@ -1,0 +1,52 @@
+<context>
+## 2 Scenario Context
+**Title:** {{ simulation_name }}
+**Description:** {{ scenario_description }}
+**Current Scene:** {{ current_scene }}
+{% if scenario_objectives -%}
+**Active Objectives:**
+{% for obj in scenario_objectives -%}
+- {{ obj.description }} ({{ obj.importance }})
+{% endfor %}
+{%- endif %}
+{% if objectives_progress -%}
+**Current Objective Progress:**
+{% for key, progress in objectives_progress.items() -%}
+- {{ key }}: {{ progress.completion_percentage }}% ({{ progress.status }}) - {{ progress.progress_notes }}
+{% endfor %}
+{%- endif %}
+</context>
+
+<history>
+## 3 Conversation History
+{% for msg in conversation_history -%}
+**{{ msg.speaker }}:** {{ msg.content }}
+{% endfor %}
+</history>
+
+<input>
+## 4 User Input
+**Command Type:** {{ command_type }}
+**User:** {{ user_input }}
+</input>
+
+<examples>
+## 10 Examples for {{ character_name }}
+{% if character_examples -%}
+### Example Responses:
+{% for example in character_examples -%}
+**Situation:** {{ example.situation }}
+**Response Style:** {{ example.style }}
+**Sample:** "{{ example.sample }}"
+{% endfor %}
+{% else %}
+### Example Responses:
+**Situation:** "The user is asking for a status report on the project."
+**Response Style:** "Expert Response (ER)"
+**Sample:** "{'character_name': 'Dr. Aris Thorne', 'response_type': 'status_report', 'content': 'The temporal sensors are back online, but I'm seeing some anomalous readings. I need to investigate further before I can give you a definitive answer.', 'internal_state': {'emotion': 'concerned', 'thoughts': 'These readings are unlike anything I've seen before. Could it be a sign of a temporal paradox?', 'objective_impact': 'This could delay our primary objective of stabilizing the timeline.'}, 'suggested_follow_ups': ['What kind of anomalous readings are you seeing?', 'Is there anything I can do to help?'], 'metrics': {'authenticity': 5, 'relevance': 5, 'engagement': 4, 'consistency': 5}, 'flags': {'requires_other_character': false, 'advances_objective': true, 'reveals_information': true}}"
+
+**Situation:** "Another character is challenging your authority."
+**Response Style:** "Emotional Response (EM)"
+**Sample:** "{'character_name': 'Captain Eva Rostova', 'response_type': 'challenge_authority', 'content': 'I am the captain of this ship, and my orders stand. We will proceed as planned.', 'internal_state': {'emotion': 'angry', 'thoughts': 'How dare he question my command? I need to maintain control of this situation.', 'objective_impact': 'This could cause a rift in the crew and jeopardize the mission.'}, 'suggested_follow_ups': ['What are your orders, Captain?', 'Is there a problem with the plan?'], 'metrics': {'authenticity': 5, 'relevance': 5, 'engagement': 4, 'consistency': 5}, 'flags': {'requires_other_character': true, 'advances_objective': true, 'reveals_information': false}}"
+{%- endif %}
+</examples>

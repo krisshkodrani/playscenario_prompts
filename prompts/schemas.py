@@ -232,3 +232,68 @@ class ScenarioCritiqueScoreSchema(BaseModel):
     creativity: int = Field(..., description="Score (0-10) for how creative and imaginative the scenario concept is.")
     originality: int = Field(..., description="Score (0-10) for how original and non-cliché the plot and setting are.")
     engagement: int = Field(..., description="Score (0-10) for how engaging and compelling the scenario's hooks and conflicts are.")
+
+
+# --- Character in Simulation Schemas ---
+
+class InternalState(BaseModel):
+    emotion: str
+    thoughts: str
+    objective_impact: str
+
+class Metrics(BaseModel):
+    authenticity: int
+    relevance: int
+    engagement: int
+    consistency: int
+
+class Flags(BaseModel):
+    requires_other_character: bool
+    advances_objective: bool
+    reveals_information: bool
+
+class CharacterInSimulationOutput(BaseModel):
+    character_name: str
+    response_type: str
+    content: str
+    internal_state: InternalState
+    suggested_follow_ups: List[str]
+    metrics: Metrics
+    flags: Flags
+
+class ScenarioObjective(BaseModel):
+    description: str
+    importance: str
+
+class ObjectiveProgress(BaseModel):
+    completion_percentage: int
+    status: str
+    progress_notes: str
+
+class ConversationMessage(BaseModel):
+    speaker: str
+    content: str
+
+class CharacterExample(BaseModel):
+    situation: str
+    style: str
+    sample: str
+
+
+class CharacterInSimulationInput(BaseModel):
+    character_name: str
+    simulation_name: str
+    character_role: str
+    character_expertise: str
+    character_personality: str
+    character_behaviors: List[str]
+    selected_strategy: str
+    emergency_keywords: List[str]
+    scenario_description: str
+    current_scene: str
+    scenario_objectives: Optional[List[ScenarioObjective]] = None
+    objectives_progress: Optional[dict[str, ObjectiveProgress]] = None
+    conversation_history: List[ConversationMessage]
+    command_type: str
+    user_input: str
+    character_examples: Optional[List[CharacterExample]] = None
