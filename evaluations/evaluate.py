@@ -172,6 +172,8 @@ def run_evaluation(
             SchemaClass = factory_instance.build_prompt_create.__annotations__['request']
         elif factory_method_name == "build_prompt_edit":
             SchemaClass = factory_instance.build_prompt_edit.__annotations__['request']
+        elif factory_method_name == "build_prompt":
+            SchemaClass = factory_instance.build_prompt.__annotations__['request']
         else:
             raise ValueError(f"Unsupported factory method: {factory_method_name}")
 
