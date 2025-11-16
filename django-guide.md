@@ -1,6 +1,6 @@
-# Django Integration Guide for PlayScenario Prompt Library
+# Django Integration Guide for PlayScenario Prompts Library
 
-This guide provides instructions on how to integrate and use the `playscenario-prompt-lib` within a Django project.
+This guide provides instructions on how to integrate and use the `playscenario_prompts` library within a Django project.
 
 ## Table of Contents
 
@@ -13,29 +13,28 @@ This guide provides instructions on how to integrate and use the `playscenario-p
 
 ## Installation & Setup
 
-To use the `playscenario-prompt-lib` in your Django project, you'll need to install it via pip.
+To use the `playscenario_prompts` library in your Django project, you'll need to install it using Poetry.
 
 1.  **Install the library:**
 
-    You can install the library directly from a Git repository if it's not on PyPI. Add the following line to your `requirements.txt` file:
+    Since this is a private repository, you can install it directly from Git. Add the following to your Django project's `pyproject.toml`:
 
-    ```
-    # requirements.txt
+    ```toml
+    # pyproject.toml
+    [tool.poetry.dependencies]
     ...
-    # playscenario-prompt-lib @ git+https/path/to/your/git/repo.git
+    playscenario_prompts = { git = "https://path/to/your/git/repo.git", branch = "main" }
     ```
+
+    Then, run `poetry install` in your Django project's root.
 
     For local development, you can use an editable install. From the root of this library's repository, run:
 
     ```bash
-    pip install -e .
+    poetry install
     ```
+    This will install all dependencies and make the `playscenario_prompts` package available in your environment.
 
-    Then, from your Django project's directory, install the dependencies:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
 
 ## Configuration
 
@@ -76,9 +75,9 @@ It's crucial to handle API keys securely in a Django project. The recommended ap
 
 This library is designed with a clear separation of concerns. For a Django developer, the key components to understand are:
 
--   **Schemas (`prompts.schemas`)**: These are Pydantic models that define the data structures for both the inputs your application will provide (e.g., `ScenarioCreationRequest`) and the structured data you expect back from the AI model (e.g., `ScenarioSchema`). You'll use these to validate data and ensure type safety.
+-   **Schemas (`playscenario_prompts.schemas`)**: These are Pydantic models that define the data structures for both the inputs your application will provide (e.g., `ScenarioCreationRequest`) and the structured data you expect back from the AI model (e.g., `ScenarioSchema`). You'll use these to validate data and ensure type safety.
 
--   **Prompt Factories (`prompts.agents.*.prompt_factory`)**: These are the workhorses of the library. A class like `ScenarioHelperPromptFactory` is responsible for taking your input data (as a schema object), rendering it into the correct Jinja2 templates, and producing the final system and user prompts to be sent to an AI model.
+-   **Prompt Factories (`playscenario_prompts.agents.*.prompt_factory`)**: These are the workhorses of the library. A class like `ScenarioHelperPromptFactory` is responsible for taking your input data (as a schema object), rendering it into the correct Jinja2 templates, and producing the final system and user prompts to be sent to an AI model.
 
 -   **Agents**: This is a conceptual grouping of related prompt factories. For example, everything related to creating and editing scenarios is handled by the `scenario_helper` agent. The main agents are:
     -   `scenario_helper`: Creates and edits scenarios.
@@ -107,8 +106,8 @@ import os
 import json
 import openai
 from django.conf import settings
-from prompts.agents.scenario_helper.prompt_factory import ScenarioHelperPromptFactory
-from prompts.schemas import ScenarioCreationRequest, ChainOfThoughtScenarioSchema
+from playscenario_prompts.agents.scenario_helper.prompt_factory import ScenarioHelperPromptFactory
+from playscenario_prompts.schemas import ScenarioCreationRequest, ChainOfThoughtScenarioSchema
 
 class PromptService:
     def __init__(self):

@@ -1,5 +1,0 @@
-typer
-pyyaml
-google-generativeai
-openai
-python-dotenv

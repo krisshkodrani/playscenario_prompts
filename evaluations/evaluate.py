@@ -163,7 +163,7 @@ def run_evaluation(
     # 3. Use the prompts library to build the prompt (dynamic import)
     try:
         # Dynamically import the factory class
-        factory_module = __import__(f"prompts.agents.{agent_name}.prompt_factory", fromlist=[f"{agent_name}Factory"])
+        factory_module = __import__(f"playscenario_prompts.agents.{agent_name}.prompt_factory", fromlist=[f"{agent_name}Factory"])
         FactoryClass = getattr(factory_module, f"{''.join(word.capitalize() for word in agent_name.split('_'))}PromptFactory")
 
         # Instantiate the factory and the input schema
@@ -223,8 +223,8 @@ def run_evaluation(
         # This is a basic implementation. A real harness would be more robust.
         if assertion_type == "is_valid_pydantic_schema":
             try:
-                # Dynamically get the schema class from prompts.schemas
-                SchemaToValidate = __import__("prompts.schemas", fromlist=[assertion.get("schema")]).__dict__[assertion.get("schema")]
+                # Dynamically get the schema class from playscenario_prompts.schemas
+                SchemaToValidate = __import__("playscenario_prompts.schemas", fromlist=[assertion.get("schema")]).__dict__[assertion.get("schema")]
                 SchemaToValidate.model_validate_json(strip_markdown(response_text))
                 result = f"[PASS] Response validates against {assertion.get('schema')}"
                 typer.secho(f"  {result}", fg=typer.colors.GREEN)
@@ -299,11 +299,11 @@ def run_evaluation(
                 if "final_character" in main_model_output_json:
                     data_to_critique = main_model_output_json.get("final_character", {})
                     placeholder = "{{ character_data }}"
-                    CritiqueSchema = __import__("prompts.schemas", fromlist=["CharacterCritiqueScoreSchema"]).__dict__["CharacterCritiqueScoreSchema"]
+                    CritiqueSchema = __import__("playscenario_prompts.schemas", fromlist=["CharacterCritiqueScoreSchema"]).__dict__["CharacterCritiqueScoreSchema"]
                 elif "final_scenario" in main_model_output_json:
                     data_to_critique = main_model_output_json.get("final_scenario", {})
                     placeholder = "{{ scenario_data }}"
-                    CritiqueSchema = __import__("prompts.schemas", fromlist=["ScenarioCritiqueScoreSchema"]).__dict__["ScenarioCritiqueScoreSchema"]
+                    CritiqueSchema = __import__("playscenario_prompts.schemas", fromlist=["ScenarioCritiqueScoreSchema"]).__dict__["ScenarioCritiqueScoreSchema"]
                 else:
                     raise ValueError("Could not find 'final_character' or 'final_scenario' in LLM output for AI critique.")
 
