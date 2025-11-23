@@ -1,9 +1,9 @@
-# prompts/agents/character_helper/prompt_factory.py
+# playscenario_prompts/agents/character_helper/prompt_factory.py
 import json
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from typing import Optional
 from pathlib import Path
-from prompts.schemas import (
+from playscenario_prompts.schemas import (
     CharacterSchema,
     CharacterCreationRequest,
     ChainOfThoughtCharacterSchema,
@@ -13,7 +13,7 @@ from prompts.schemas import (
 class CharacterHelperPromptFactory:
 
     def __init__(self, template_dir: Optional[Path] = None):
-        base_dir = template_dir or Path("prompts/")
+        base_dir = template_dir or Path("playscenario_prompts/")
         self._env = Environment(
             loader=FileSystemLoader(base_dir),
             autoescape=select_autoescape(),
